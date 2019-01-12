@@ -2,22 +2,15 @@ import graphene
 import graphene_django_optimizer as gql_optimizer
 from graphene import relay
 
-from ...order import OrderEvents, OrderEventsEmails, models
+from ...order import models
 from ...product.templatetags.product_images import get_product_image_thumbnail
 from ..account.types import User
-from ..core.types.common import CountableDjangoObjectType
+from ..core.connection import CountableDjangoObjectType
 from ..core.types.money import Money, TaxedMoney
 from ..payment.types import OrderAction, Payment, PaymentChargeStatusEnum
 from ..shipping.types import ShippingMethod
-from .utils import can_finalize_draft_order
-
-OrderEventsEnum = graphene.Enum.from_enum(OrderEvents)
-OrderEventsEmailsEnum = graphene.Enum.from_enum(OrderEventsEmails)
-
-
-class OrderStatusFilter(graphene.Enum):
-    READY_TO_FULFILL = 'READY_TO_FULFILL'
-    READY_TO_CAPTURE = 'READY_TO_CAPTURE'
+from .enums import OrderEventsEmailsEnum, OrderEventsEnum
+from .utils import applicable_shipping_methods, can_finalize_draft_order
 
 
 class OrderEvent(CountableDjangoObjectType):
@@ -306,8 +299,7 @@ class Order(CountableDjangoObjectType):
 
     @staticmethod
     def resolve_available_shipping_methods(self, info):
-        from .resolvers import resolve_shipping_methods
-        return resolve_shipping_methods(
+        return applicable_shipping_methods(
             self, info, self.get_subtotal().gross.amount)
 
     def resolve_is_shipping_required(self, info):
