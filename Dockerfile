@@ -56,7 +56,7 @@ COPY --from=build-nodejs /app/templates /app/templates
 WORKDIR /app
 
 
-RUN SECRET_KEY=dummy \
+RUN SECRET_KEY=HEMMELIG_NOEGLE \
   STATIC_URL=${STATIC_URL} \
   python3 manage.py collectstatic --no-input
 
