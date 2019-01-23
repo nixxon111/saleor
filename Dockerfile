@@ -57,8 +57,8 @@ WORKDIR /app
 
 
 RUN SECRET_KEY=HEMMELIG_NOEGLE \
-    STATIC_URL=${STATIC_URL} \
-    python3 manage.py collectstatic --no-input
+  STATIC_URL=${STATIC_URL} \
+  python3 manage.py collectstatic --no-input
 
 RUN useradd --system saleor && \
   mkdir -p /app/media /app/static && \
