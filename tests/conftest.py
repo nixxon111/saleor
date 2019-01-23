@@ -255,10 +255,21 @@ def category_with_image(db, image):  # pylint: disable=W0613
 
 
 @pytest.fixture
-def categories_tree(db):
+def categories_tree(db, product_type):  # pylint: disable=W0613
     parent = Category.objects.create(name='Parent', slug='parent')
     parent.children.create(name='Child', slug='child')
+    child = parent.children.first()
+
+    product_attr = product_type.product_attributes.first()
+    attr_value = product_attr.values.first()
+    attributes = {smart_text(product_attr.pk): smart_text(attr_value.pk)}
+
+    Product.objects.create(
+        name='Test product', price=Money('10.00', 'USD'),
+        product_type=product_type, attributes=attributes, category=child)
+
     return parent
+
 
 @pytest.fixture
 def non_default_category(db):  # pylint: disable=W0613
@@ -278,9 +289,16 @@ def permission_manage_orders():
 @pytest.fixture
 def product_type(color_attribute, size_attribute):
     product_type = ProductType.objects.create(
-        name='Default Type', has_variants=False, is_shipping_required=True)
+        name='Default Type', has_variants=True, is_shipping_required=True)
     product_type.product_attributes.add(color_attribute)
     product_type.variant_attributes.add(size_attribute)
+    return product_type
+
+
+@pytest.fixture
+def product_type_without_variant():
+    product_type = ProductType.objects.create(
+        name='Type', has_variants=False, is_shipping_required=True)
     return product_type
 
 
@@ -302,6 +320,17 @@ def product(product_type, category):
     ProductVariant.objects.create(
         product=product, sku='123', attributes=variant_attributes,
         cost_price=Money('1.00', 'USD'), quantity=10, quantity_allocated=1)
+    return product
+
+
+@pytest.fixture
+def product_with_default_variant(product_type_without_variant, category):
+    product = Product.objects.create(
+        name='Test product', price=Money('10.00', 'USD'),
+        product_type=product_type_without_variant, category=category)
+    ProductVariant.objects.create(
+        product=product, sku='1234', track_inventory=True,
+        quantity=100)
     return product
 
 

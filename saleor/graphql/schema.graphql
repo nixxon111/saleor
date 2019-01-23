@@ -587,12 +587,6 @@ input DraftOrderInput {
   voucher: ID
 }
 
-type DraftOrderLineCreate {
-  errors: [Error!]
-  order: Order
-  orderLine: OrderLine
-}
-
 type DraftOrderLineDelete {
   errors: [Error!]
   order: Order
@@ -603,6 +597,12 @@ type DraftOrderLineUpdate {
   errors: [Error!]
   order: Order
   orderLine: OrderLine
+}
+
+type DraftOrderLinesCreate {
+  errors: [Error!]
+  order: Order!
+  orderLines: [OrderLine!]!
 }
 
 type DraftOrderUpdate {
@@ -876,7 +876,7 @@ type Mutations {
   draftOrderComplete(id: ID!): DraftOrderComplete
   draftOrderCreate(input: DraftOrderCreateInput!): DraftOrderCreate
   draftOrderDelete(id: ID!): DraftOrderDelete
-  draftOrderLineCreate(id: ID!, input: OrderLineCreateInput!): DraftOrderLineCreate
+  draftOrderLinesCreate(id: ID!, input: [OrderLineCreateInput]!): DraftOrderLinesCreate
   draftOrderLineDelete(id: ID!): DraftOrderLineDelete
   draftOrderLineUpdate(id: ID!, input: OrderLineInput!): DraftOrderLineUpdate
   draftOrderUpdate(id: ID!, input: DraftOrderInput!): DraftOrderUpdate
@@ -1377,6 +1377,9 @@ input ProductCreateInput {
   taxRate: TaxRateType
   seo: SeoInput
   weight: WeightScalar
+  sku: String
+  quantity: Int
+  trackInventory: Boolean
   productType: ID!
 }
 
@@ -1439,6 +1442,9 @@ input ProductInput {
   taxRate: TaxRateType
   seo: SeoInput
   weight: WeightScalar
+  sku: String
+  quantity: Int
+  trackInventory: Boolean
 }
 
 input ProductOrder {
@@ -1965,6 +1971,7 @@ type User implements Node {
   defaultShippingAddress: Address
   defaultBillingAddress: Address
   orders(before: String, after: String, first: Int, last: Int): OrderCountableConnection
+  checkout: Checkout
   permissions: [PermissionDisplay]
 }
 
