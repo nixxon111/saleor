@@ -323,6 +323,7 @@ input CheckoutCreateInput {
   lines: [CheckoutLineInput]
   email: String
   shippingAddress: AddressInput
+  billingAddress: AddressInput
 }
 
 type CheckoutCustomerAttach {
@@ -365,8 +366,8 @@ type CheckoutLineDelete {
 }
 
 input CheckoutLineInput {
-  quantity: Int
-  variantId: ID
+  quantity: Int!
+  variantId: ID!
 }
 
 type CheckoutLinesAdd {
@@ -830,6 +831,7 @@ type Mutations {
   homepageCollectionUpdate(collection: ID): HomepageCollectionUpdate
   shopDomainUpdate(input: SiteDomainInput): ShopDomainUpdate
   shopSettingsUpdate(input: ShopSettingsInput!): ShopSettingsUpdate
+  shopFetchTaxRates: ShopFetchTaxRates
   shippingPriceCreate(input: ShippingPriceInput!): ShippingPriceCreate
   shippingPriceDelete(id: ID!): ShippingPriceDelete
   shippingPriceUpdate(id: ID!, input: ShippingPriceInput!): ShippingPriceUpdate
@@ -1625,7 +1627,7 @@ type Query {
 
 type ReducedRate {
   rate: Float!
-  rateType: String!
+  rateType: TaxRateType!
 }
 
 type Refresh {
@@ -1801,6 +1803,7 @@ type Shop {
   countries: [CountryDisplay]!
   currencies: [String]!
   defaultCurrency: String!
+  availablePaymentGateways: [GatewaysEnum]!
   defaultCountry: CountryDisplay
   description: String
   domain: Domain!
@@ -1811,8 +1814,9 @@ type Shop {
   permissions: [PermissionDisplay]!
   phonePrefixes: [String]!
   headerText: String
-  includeTaxesInPrices: Boolean
-  displayGrossPrices: Boolean
+  includeTaxesInPrices: Boolean!
+  displayGrossPrices: Boolean!
+  chargeTaxesOnShipping: Boolean!
   trackInventoryByDefault: Boolean
   defaultWeightUnit: WeightUnitsEnum
 }
@@ -1822,11 +1826,17 @@ type ShopDomainUpdate {
   shop: Shop
 }
 
+type ShopFetchTaxRates {
+  errors: [Error!]
+  shop: Shop
+}
+
 input ShopSettingsInput {
   headerText: String
   description: String
   includeTaxesInPrices: Boolean
   displayGrossPrices: Boolean
+  chargeTaxesOnShipping: Boolean
   trackInventoryByDefault: Boolean
   defaultWeightUnit: WeightUnitsEnum
 }
@@ -1905,6 +1915,7 @@ enum TaxRateType {
   SOCIAL_HOUSING
   STANDARD
   WATER
+  WINE
 }
 
 type TaxedMoney {
@@ -2005,7 +2016,7 @@ input UserCreateInput {
 type VAT {
   countryCode: String!
   standardRate: Float
-  reducedRates: [ReducedRate]
+  reducedRates: [ReducedRate]!
 }
 
 type VariantImageAssign {
