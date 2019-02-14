@@ -2,6 +2,7 @@ import graphene
 from graphql_jwt.decorators import permission_required
 
 from ...discount import VoucherType, models
+from ...discount.utils import generate_voucher_code
 from ..core.mutations import BaseMutation, ModelDeleteMutation, ModelMutation
 from ..core.scalars import Decimal
 from ..product.types import Category, Collection, Product
@@ -121,6 +122,9 @@ class VoucherCreate(ModelMutation):
 
     @classmethod
     def clean_input(cls, info, instance, input, errors):
+        code = input.get('code', None)
+        if code == '':
+            input['code'] = generate_voucher_code()
         cleaned_input = super().clean_input(info, instance, input, errors)
         voucher_errors = validate_voucher(cleaned_input)
         for err in voucher_errors:
@@ -216,9 +220,9 @@ class SaleInput(graphene.InputObjectType):
     collections = graphene.List(
         graphene.ID, description='Collections related to the discount.',
         name='collections')
-    start_date = graphene.types.datetime.Date(
+    start_date = graphene.Date(
         description='Start date of the sale in ISO 8601 format.')
-    end_date = graphene.types.datetime.Date(
+    end_date = graphene.Date(
         description='End date of the sale in ISO 8601 format.')
 
 
