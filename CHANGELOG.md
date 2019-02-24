@@ -3,12 +3,33 @@
 All notable, unreleased changes to this project will be documented in this file. For the released changes, please visit the [Releases](https://github.com/mirumee/saleor/releases) page.
 
 ## [Unreleased]
+- New translations:
+  - Indonesian
 - Fix problem with l10n in Braintree payment gateway template - #3691 by @Kwaidan00
 - Improve vouchers country limiting  - #3707 by @michaljelonek
 - Add support for date and datetime components - #3708 by @dominik-zeglen
 - Unify field names on product, collection and page - #3706 by @michaljelonek
 - Generate voucher code if it wasn't provided in mutation - #3717 by @Kwaidan00
 - Reuse Storefront's 1.0 payment logic in API - #3715 by @maarcingebala
+- Add instructions for using local assets in Docker - #3723 by @michaljelonek
+- Remove unused imports - #3645 by @jxltom
+- Add discount section - #3654 by @dominik-zeglen
+- Disable style-loader in dev mode - #3720 by @jxltom
+- Use authenticated user's email as default email in creating checkout - #3726 by @jxltom
+- Fix access to unpublished objects via API - #3724 by @Kwaidan00
+- Add thumbnail to OrderLine, deprecate thumbnailUrl - #3737 by @michaljelonek
+- Refactor translations in emails - #3701 by @Kwaidan00
+- Add orderByToken query - #3740 by @michaljelonek
+- Enable existing search with backend picker in products query - #3736 by @michaljelonek
+- Fix bug where payment is not filtered from active ones when creating payment - #3731 by @jxltom
+- Sort order's payment and history descendingly - #3747 by @jxltom
+- Use exact image versions in docker-compose - #3742 by @ashishnitinpatil
+- Add mutation to connect voucher with checkout - #3739 by @Kwaidan00
+- Update S3 deployment documentation to include CORS configuration note - #3743 by @NyanKiyoshi
+- Fix missing migrations for is_published field of product and page model - #3757 by @jxltom
+- Add header and footer for checkout success pages #3752 by @jxltom
+- Filter order by payment status from order's last payment - #3749 @jxltom
+- Reuse cart creation logic in API - #3761 by @maarcingebala
 
 
 ## 2.3.0
@@ -81,7 +102,7 @@ All notable, unreleased changes to this project will be documented in this file.
 - Resolve to `None` when empty object ID was passed as mutation argument - #3497 by @maarcingebala
 - Change `errors` field type from [Error] to [Error!] - #3489 by @fowczarek
 - Support creating default variant for product types that don't use multiple variants - #3505 by @fowczarek
-- Validate SKU when creating a default variant - #3555 by @fowczarek
+- Validate SKU when creating a default variant - #3555 by @fowczarek
 - Extract enums to separate files - #3523 by @maarcingebala
 
 ### Core

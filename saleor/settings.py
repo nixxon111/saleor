@@ -73,6 +73,7 @@ LANGUAGES = [
     ('fr', _('French')),
     ('hi', _('Hindi')),
     ('hu', _('Hungarian')),
+    ('id', _('Indonesian')),
     ('it', _('Italian')),
     ('ja', _('Japanese')),
     ('ko', _('Korean')),

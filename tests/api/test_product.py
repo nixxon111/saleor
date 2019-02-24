@@ -159,6 +159,34 @@ def test_product_query(staff_api_client, product, permission_manage_products):
     assert margin[1] == product_data['margin']['stop']
 
 
+def test_product_query_search(user_api_client, product_type, category):
+    blue_product = Product.objects.create(
+        name='Blue Paint', price=Money('10.00', 'USD'),
+        product_type=product_type, category=category)
+    Product.objects.create(
+        name='Red Paint', price=Money('10.00', 'USD'),
+        product_type=product_type, category=category)
+
+    query = """
+    query productSearch($query: String) {
+        products(query: $query, first: 10) {
+            edges {
+                node {
+                    name
+                }
+            }
+        }
+    }
+    """
+
+    response = user_api_client.post_graphql(query, {'query': 'blu p4int'})
+    content = get_graphql_content(response)
+    products = content['data']['products']['edges']
+
+    assert len(products) == 1
+    assert products[0]['node']['name'] == blue_product.name
+
+
 def test_query_product_image_by_id(user_api_client, product_with_image):
     image = product_with_image.images.first()
     query = """
@@ -239,6 +267,47 @@ def test_fetch_product_by_id(user_api_client, product):
     content = get_graphql_content(response)
     product_data = content['data']['node']
     assert product_data['name'] == product.name
+
+
+def _fetch_product(client, product, permissions=None):
+    query = """
+    query ($productId: ID!) {
+        node(id: $productId) {
+            ... on Product {
+                name,
+                isPublished
+            }
+        }
+    }
+    """
+    variables = {
+        'productId': graphene.Node.to_global_id('Product', product.id)}
+    response = client.post_graphql(
+        query, variables, permissions=permissions, check_no_permissions=False)
+    content = get_graphql_content(response)
+    return content['data']['node']
+
+
+def test_fetch_unpublished_product_staff_user(
+        staff_api_client, unavailable_product, permission_manage_products):
+    product_data = _fetch_product(
+        staff_api_client,
+        unavailable_product,
+        permissions=[permission_manage_products])
+    assert product_data['name'] == unavailable_product.name
+    assert product_data['isPublished'] == unavailable_product.is_published
+
+
+def test_fetch_unpublished_product_customer(
+        user_api_client, unavailable_product):
+    product_data = _fetch_product(user_api_client, unavailable_product)
+    assert product_data is None
+
+
+def test_fetch_unpublished_product_anonymous_user(
+        api_client, unavailable_product):
+    product_data = _fetch_product(api_client, unavailable_product)
+    assert product_data is None
 
 
 def test_filter_products_by_attributes(user_api_client, product):
